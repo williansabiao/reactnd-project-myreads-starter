@@ -5,22 +5,25 @@ import Book from '../Book';
 class BookShelf extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
-    books: PropTypes.array.isRequired,
+    books: PropTypes.array,
     shelfChange: PropTypes.func.isRequired,
   };
 
   render () {
-    const { title, books, shelfChange } = this.props;
+    const { title, books, loaded, shelfChange } = this.props;
 
     return (
       <div className="bookshelf">
         <h2 className="bookshelf-title">{title}</h2>
         <div className="bookshelf-books">
           <ol className="books-grid">
-            {books.length <= 0 && (
+            {!loaded && (
               <p>Loading...</p>
             )}
-            {books.length > 0 && books.map(( book ) => {
+            {loaded && books && books.length <= 0 && (
+              <p>No books to show</p>
+            )}
+            {books && books.length > 0 && books.map(( book ) => {
               return (
                 <li key={book.id}>
                   <Book book={ book } shelfChange={shelfChange} />
