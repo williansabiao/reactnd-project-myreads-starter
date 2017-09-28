@@ -7,8 +7,8 @@ class Routes extends Component {
   render () {
     return (
       <div>
-        <Route exact path='/' render={() => <MyReads />} />
-        <Route exact path='/search' render={() => <Search />} />
+        <Route exact path='/' component={MyReads} />
+        <Route exact path='/search' component={Search} />
       </div>
     )
   };
