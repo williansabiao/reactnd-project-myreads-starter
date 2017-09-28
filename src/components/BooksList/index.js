@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import * as BooksAPI from './../../BooksAPI';
+import { getAll as BooksAPIGetAll } from './../../BooksAPI';
 import BookShelf from '../BookShelf';
 import utils from '../../utils';
 
@@ -14,8 +14,7 @@ class BooksList extends Component {
   };
 
   componentDidMount() {
-    BooksAPI
-      .getAll()
+    BooksAPIGetAll()
       .then((data) => {
         this.setState({
           loaded: true,
@@ -27,31 +26,24 @@ class BooksList extends Component {
   updateBookShelf = (newShelf, book) => {
     if(!book || !newShelf || (book.shelf === newShelf)) return;
 
-    BooksAPI
-      .update(book, newShelf)
-      .then((response, body) => {
-        console.log(response);
-        if(!response || typeof response !== 'object') return;
+    this.setState((prevState) => {
+      const prevBooks = prevState.books;
+      const actShelf = book.shelf;
 
-        this.setState((prevState) => {
-          const prevBooks = prevState.books;
-          const actShelf = book.shelf;
+      // Remove book from old shelf
+      const bookPosition = prevBooks[actShelf].indexOf(book);
+      if(bookPosition < 0) return {};
 
-          // Remove book from old shelf
-          const bookPosition = prevBooks[actShelf].indexOf(book);
-          if(bookPosition < 0) return {};
+      prevBooks[actShelf].splice(bookPosition, 1);
 
-          prevBooks[actShelf].splice(bookPosition, 1);
+      prevBooks[newShelf] = prevBooks[newShelf] || [];
 
-          prevBooks[newShelf] = prevBooks[newShelf] || [];
+      // Change the shelf of current book
+      book.shelf = newShelf;
+      prevBooks[newShelf].push(book);
 
-          // Change the shelf of current book
-          book.shelf = newShelf;
-          prevBooks[newShelf].push(book);
-
-          return prevBooks;
-        })
-      })
+      return prevBooks;
+    })
   };
 
   render () {
