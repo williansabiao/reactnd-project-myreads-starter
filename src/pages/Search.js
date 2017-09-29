@@ -16,7 +16,13 @@ class Search extends Component {
 
   searchBooks = (query) => { // parameter to be called async with setState
     BooksAPISearch(query || this.state.query)
-      .then((response) => response && typeof response === 'object' && !response.error && response.length >= 0 && this.setState({books: response, loaded: true}));
+      .then((response) => {
+        if(!response || typeof response !== 'object' || response.error) {
+          return this.setState({ loaded: true, books: [] });
+        }
+
+        this.setState({books: response, loaded: true});
+      });
   };
 
   updateQuery = (event) => {

@@ -23,7 +23,7 @@ class BookShelf extends Component {
             {loaded && books && books.length <= 0 && (
               <p>No books to show</p>
             )}
-            {books && books.length > 0 && books.map(( book ) => {
+            {loaded && books && books.length > 0 && books.map(( book ) => {
               return (
                 <li key={book.id}>
                   <Book book={ book } shelfChange={shelfChange} />

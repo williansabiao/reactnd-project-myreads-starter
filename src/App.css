@@ -28,6 +28,8 @@ body, .app {
 
 .bookshelf {
   padding: 0 10px 20px;
+  display: block;
+  width: 100%;
 }
 
 @media (min-width: 600px) {

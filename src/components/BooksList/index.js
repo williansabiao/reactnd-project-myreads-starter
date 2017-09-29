@@ -5,7 +5,7 @@ import utils from '../../utils';
 
 class BooksList extends Component {
   state = {
-    loaded: false,
+    loaded: true,
     books: {
       currentlyReading: [],
       wantToRead: [],
@@ -14,6 +14,7 @@ class BooksList extends Component {
   };
 
   componentDidMount() {
+    this.setState({ loaded: false });
     BooksAPIGetAll()
       .then((data) => {
         this.setState({
