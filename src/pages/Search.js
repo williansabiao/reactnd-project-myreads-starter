@@ -3,29 +3,33 @@ import { Link } from 'react-router-dom';
 import { search as BooksAPISearch } from './../BooksAPI';
 import BookShelf from './../components/BookShelf';
 
+const WAIT_INTERVAL = 1000;
+
 class Search extends Component {
   state = {
     query: '',
     books: [],
-    loaded: false,
+    loaded: true,
   }
 
-  // TODO: fix error when write fast
-  // TODO: fix when get error or get a empty list
+  timer = null;
+
   searchBooks = (query) => { // parameter to be called async with setState
-    BooksAPISearch(query || this.state.query, 20)
+    BooksAPISearch(query || this.state.query)
       .then((response) => response && typeof response === 'object' && !response.error && response.length >= 0 && this.setState({books: response, loaded: true}));
   };
 
   updateQuery = (event) => {
     const query = event.target.value;
-    this.setState({ query });
+    this.setState({ query, loaded: false });
 
     this.props.history.push({
       search: `query=${query}`,
     });
 
-    query && query.length > 0 && this.searchBooks();
+    // Wait until the user stop to write
+    clearTimeout(this.timer);
+    this.timer = setTimeout(query && query.length > 0 && this.searchBooks, WAIT_INTERVAL);
   };
 
   componentDidMount() {
