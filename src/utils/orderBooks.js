@@ -1,4 +1,4 @@
-const orderByShelf = (booksList) => {
+const byShelf = (booksList) => {
   let newBookList = {};
 
   booksList.forEach((book) => {
@@ -9,4 +9,12 @@ const orderByShelf = (booksList) => {
   return newBookList;
 };
 
-export default orderByShelf;
+const flattenShelf = (booksListInShelf) => {
+  return Object.keys(booksListInShelf).reduce((prev, key) => {
+    return (prev || []).concat(booksListInShelf[key]);
+  }, 0);
+};
+
+const byID = (books) => books.map((book) => book.id);
+
+export default { byShelf, flattenShelf, byID };

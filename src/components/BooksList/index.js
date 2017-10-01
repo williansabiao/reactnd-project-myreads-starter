@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
 import { getAll as BooksAPIGetAll } from './../../BooksAPI';
 import BookShelf from '../BookShelf';
+import PropTypes from 'prop-types';
 import utils from '../../utils';
 
 class BooksList extends Component {
+  static propTypes = {
+    updateBooks: PropTypes.func,
+  };
+
   state = {
     loaded: true,
     books: {
@@ -15,13 +20,18 @@ class BooksList extends Component {
 
   componentDidMount() {
     this.setState({ loaded: false });
+    let books = [];
+
     BooksAPIGetAll()
       .then((data) => {
+        books = utils.orderBooks.byShelf(data);
         this.setState({
           loaded: true,
-          books: utils.orderBooks(data),
+          books: books,
         });
-      });
+        return books;
+      })
+      .then((books) => this.props.updateBooks(books));
   };
 
   updateBookShelf = (newShelf, book) => {
@@ -43,6 +53,7 @@ class BooksList extends Component {
       book.shelf = newShelf;
       prevBooks[newShelf].push(book);
 
+      this.props.updateBooks(prevBooks);
       return prevBooks;
     })
   };
