@@ -24,6 +24,8 @@ class Book extends Component {
         })
     }
 
+    if(!book.imageLinks || !book.imageLinks.smallThumbnail) book.imageLinks = { smallThumbnail: 'http://via.placeholder.com/128x193?text=No%20Cover' };
+
     return (
       <div className="book">
         <div className="book-top">
