@@ -6,8 +6,8 @@ import utils from '../../utils';
 
 class BooksList extends Component {
   static propTypes = {
-    updateBooks: PropTypes.func,
-  };
+    updateBooksOnShelf: PropTypes.func.isRequired,
+  }
 
   state = {
     loaded: true,
@@ -16,7 +16,7 @@ class BooksList extends Component {
       wantToRead: [],
       read: [],
     },
-  };
+  }
 
   componentDidMount() {
     this.setState({ loaded: false });
@@ -29,33 +29,38 @@ class BooksList extends Component {
           loaded: true,
           books: books,
         });
-        return books;
+        return data;
       })
-      .then((books) => this.props.updateBooks(books));
-  };
+      .then((books) => this.props.updateBooksOnShelf(books));
+  }
+
+  flattenBooks = (books) => [].concat(...Object.values(books))
 
   updateBookShelf = (newShelf, book) => {
+
     if(!book || !newShelf || (book.shelf === newShelf)) return;
 
-    this.setState((prevState) => {
-      const prevBooks = prevState.books;
-      const actShelf = book.shelf;
+    // *** IMPORTANT NOTE ***//
+    // *** if I use JSON.assign, the state is changed when I manipulate the variable, using JSON.parse/JSON.stringify it's works properly ***//
 
-      // Remove book from old shelf
-      const bookPosition = prevBooks[actShelf].indexOf(book);
-      if(bookPosition < 0) return {};
+    // let newBooks = JSON.assign({}, this.state.books);
+    let newBooks = JSON.parse(JSON.stringify(this.state.books));
 
-      prevBooks[actShelf].splice(bookPosition, 1);
+    const actShelf = book.shelf;
 
-      prevBooks[newShelf] = prevBooks[newShelf] || [];
+    // Remove book from old shelf
+    const bookPosition = newBooks[actShelf].findIndex((newBook) => newBook.id === book.id);
+    if(bookPosition < 0) return;
 
-      // Change the shelf of current book
-      book.shelf = newShelf;
-      prevBooks[newShelf].push(book);
+    newBooks[actShelf].splice(bookPosition, 1);
 
-      this.props.updateBooks(prevBooks);
-      return prevBooks;
-    })
+    newBooks[newShelf] = newBooks[newShelf] || [];
+
+    // Change the shelf of current book
+    newBooks[newShelf].push(book);
+
+    this.setState({books: newBooks});
+    this.props.updateBooksOnShelf(this.flattenBooks(newBooks));
   };
 
   render () {

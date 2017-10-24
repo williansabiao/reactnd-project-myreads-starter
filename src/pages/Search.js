@@ -1,37 +1,63 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { search as BooksAPISearch } from './../BooksAPI';
+import { search as BooksAPISearch, getAll as BooksAPIGetAll } from './../BooksAPI';
 import BookShelf from './../components/BookShelf';
+import PropTypes from 'prop-types';
 
 const WAIT_INTERVAL = 1000;
 
 class Search extends Component {
+  static propTypes = {
+    booksOnShelf: PropTypes.array,
+  };
+
   state = {
     query: '',
     books: [],
     loaded: true,
-  }
+  };
 
   timer = null;
 
-  searchBooks = (query) => { // parameter to be called async with setState
-    BooksAPISearch(query || this.state.query)
-      .then((response) => {
-        if(!response || typeof response !== 'object' || response.error) {
-          return this.setState({ loaded: true, books: [] });
-        }
+  categorizeAndSetBooks = (books) => {
+    let newBooks = [];
+    if(books && typeof books === 'object' && !books.error) {
+      let booksShown = this.props.booksOnShelf;
+      newBooks = [...books];
 
-        this.setState({books: response, loaded: true});
-      });
+      if(booksShown) {
+        newBooks = newBooks.map((book) => {
+          return booksShown.forEach((shownBook) => {
+            if(shownBook.id === book.id) {
+              book.shelf = shownBook.shelf;
+              return book;
+            }
+          }) || book;
+        });
+      }
+    }
+
+    this.setState({ books: newBooks, loaded: true });
+  }
+
+  searchBooks = (query) => { // parameter to be called async with setState
+    query = query || this.state.query;
+    if(query.length < 1) return;
+
+    BooksAPISearch(query || this.state.query)
+      .then((books) => this.categorizeAndSetBooks(books));
   };
 
   updateQuery = (event) => {
     const query = event.target.value;
     this.setState({ query, loaded: false });
 
-    this.props.history.push({
+    this.props.route.history.push({
       search: `query=${query}`,
     });
+
+    // if query is empty, stop the search
+    if(query.length < 1) return this.setState({ loaded: true, books: [] });
 
     // Wait until the user stop to write
     clearTimeout(this.timer);
@@ -39,10 +65,27 @@ class Search extends Component {
   };
 
   componentDidMount() {
-    const query = this.props.history.location.search.replace('?query=', '');
+    const query = this.props.route.history.location.search.replace('?query=', '');
     if( query && query.length > 0) {
       this.setState({ query });
-      this.searchBooks(query);
+      this.searchBooks( query );
+    }
+    const { booksOnShelf } = this.props;
+
+    if(!booksOnShelf) {
+      BooksAPIGetAll()
+        .then((data) => {
+          return data.map((book) => {
+            if(booksOnShelf[book.id]) book.shelf = booksOnShelf[book.id].shelf;
+            return book;
+          });
+        })
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if ((nextProps.booksOnShelf !== this.props.booksOnShelf) && this.state.books.length > 0) {
+      this.categorizeAndSetBooks(this.state.books);
     }
   }
 

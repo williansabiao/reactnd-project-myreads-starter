@@ -5,18 +5,18 @@ import BooksList from './../components/BooksList';
 
 class MyReads extends Component {
   static propTypes = {
-    updateBooks: PropTypes.func.isRequired,
+    updateBooksOnShelf: PropTypes.func.isRequired,
   };
 
   render () {
-    const { updateBooks } = this.props;
-    
+    const { updateBooksOnShelf } = this.props;
+
     return (
       <div className="list-books">
         <div className="list-books-title">
           <h1>MyReads</h1>
         </div>
-        <BooksList updateBooks={updateBooks} />
+        <BooksList updateBooksOnShelf={updateBooksOnShelf} />
         <div className="open-search">
           <Link to='/search'>Add a book</Link>
         </div>
