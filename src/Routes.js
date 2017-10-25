@@ -15,7 +15,7 @@ class Routes extends Component {
     return (
       <div>
         <Route exact path='/' render={() => <MyReads updateBooksOnShelf={updateBooksOnShelf} /> } />
-        <Route exact path='/search' render={(route) => <Search route={route} booksOnShelf={booksOnShelf} />} />
+        <Route exact path='/search' render={(route) => <Search route={route} updateBooksOnShelf={updateBooksOnShelf} booksOnShelf={booksOnShelf} />} />
       </div>
     )
   };

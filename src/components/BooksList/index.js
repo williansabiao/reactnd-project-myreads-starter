@@ -55,6 +55,7 @@ class BooksList extends Component {
     newBooks[actShelf].splice(bookPosition, 1);
 
     newBooks[newShelf] = newBooks[newShelf] || [];
+    book.shelf = newShelf;
 
     // Change the shelf of current book
     newBooks[newShelf].push(book);

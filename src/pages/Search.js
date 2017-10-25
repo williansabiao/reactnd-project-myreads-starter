@@ -8,7 +8,8 @@ const WAIT_INTERVAL = 1000;
 
 class Search extends Component {
   static propTypes = {
-    booksOnShelf: PropTypes.array,
+    updateBooksOnShelf: PropTypes.func.isRequired,
+    booksOnShelf: PropTypes.array.isRequired,
   };
 
   state = {
@@ -70,15 +71,13 @@ class Search extends Component {
       this.setState({ query });
       this.searchBooks( query );
     }
-    const { booksOnShelf } = this.props;
+    const { booksOnShelf, updateBooksOnShelf } = this.props;
 
-    if(!booksOnShelf) {
+    console.log(booksOnShelf)
+    if(booksOnShelf.length === 0) {
       BooksAPIGetAll()
         .then((data) => {
-          return data.map((book) => {
-            if(booksOnShelf[book.id]) book.shelf = booksOnShelf[book.id].shelf;
-            return book;
-          });
+          updateBooksOnShelf(data);
         })
     }
   }

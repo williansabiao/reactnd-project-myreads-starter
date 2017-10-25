@@ -20,7 +20,7 @@ class BookShelf extends Component {
             {!loaded && (
               <p>Loading...</p>
             )}
-            {loaded && books && books.length <= 0 && (
+            {loaded && (!books || (books && books.length <= 0)) && (
               <p>No books to show</p>
             )}
             {loaded && books && books.length > 0 && books.map(( book ) => {
