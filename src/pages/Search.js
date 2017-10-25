@@ -39,7 +39,6 @@ class Search extends Component {
   }
 
   searchBooks = debounce((query) => { // parameter to be called async with setState
-    console.log('calling search')
     query = query || this.state.query;
     if(query.length < 1) return;
 
@@ -72,7 +71,6 @@ class Search extends Component {
     }
     const { booksOnShelf, updateBooksOnShelf } = this.props;
 
-    console.log(booksOnShelf)
     if(booksOnShelf.length === 0) {
       BooksAPIGetAll()
         .then((data) => {
