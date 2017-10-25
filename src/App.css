@@ -8,6 +8,14 @@ body, .app {
   background: white;
 }
 
+.__red {
+  color: red;
+}
+
+.__bold {
+  font-weight: 600;
+}
+
 /* main page */
 
 .list-books-title {
@@ -173,4 +181,10 @@ body, .app {
   padding: 20px 10px 0;
   text-align: center;
   font-size: 0.8em;
+}
+
+/* page not found */
+.page-not-found {
+  margin-top: 20%;
+  text-align: center;
 }

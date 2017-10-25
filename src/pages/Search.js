@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import debounce from 'lodash.debounce';
 import { search as BooksAPISearch, getAll as BooksAPIGetAll } from './../BooksAPI';
 import BookShelf from './../components/BookShelf';
 import PropTypes from 'prop-types';
-
-const WAIT_INTERVAL = 1000;
 
 class Search extends Component {
   static propTypes = {
@@ -17,8 +16,6 @@ class Search extends Component {
     books: [],
     loaded: true,
   };
-
-  timer = null;
 
   categorizeAndSetBooks = (books) => {
     let newBooks = [];
@@ -41,15 +38,17 @@ class Search extends Component {
     this.setState({ books: newBooks, loaded: true });
   }
 
-  searchBooks = (query) => { // parameter to be called async with setState
+  searchBooks = debounce((query) => { // parameter to be called async with setState
+    console.log('calling search')
     query = query || this.state.query;
     if(query.length < 1) return;
 
     BooksAPISearch(query || this.state.query)
       .then((books) => this.categorizeAndSetBooks(books));
-  };
+  }, 1000);
 
   updateQuery = (event) => {
+    event.persist();
     const query = event.target.value;
     this.setState({ query, loaded: false });
 
@@ -61,8 +60,8 @@ class Search extends Component {
     if(query.length < 1) return this.setState({ loaded: true, books: [] });
 
     // Wait until the user stop to write
-    clearTimeout(this.timer);
-    this.timer = setTimeout(query && query.length > 0 && this.searchBooks, WAIT_INTERVAL);
+
+    query && query.length > 0 && this.searchBooks();
   };
 
   componentDidMount() {
